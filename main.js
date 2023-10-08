@@ -12,10 +12,6 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 
-// const renderer = new THREE.WebGLRenderer({
-//   canvas: document.querySelector('#bg'),
-// });
-
 const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector('#bg'),
   antialias: true, // Enable antialiasing for smoother edges
@@ -23,7 +19,6 @@ const renderer = new THREE.WebGLRenderer({
 renderer.physicallyCorrectLights = true; // Enable PBR rendering
 
 renderer.setPixelRatio(window.devicePixelRatio);
-// renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setSize(window.innerWidth, window.innerHeight); // Double the resolution
 camera.position.setZ(30);
 
@@ -77,7 +72,7 @@ Array(500).fill().forEach(addStar);
 
 // Background
 
-const spaceTexture = new THREE.TextureLoader().load('candy2.jpg');
+const spaceTexture = new THREE.TextureLoader().load('space7.jpg');
 // const spaceTexture = new THREE.TextureLoader().load('pastel3.jpg');
 scene.background = spaceTexture;
 
@@ -101,25 +96,51 @@ const start = new THREE.Mesh(
   new THREE.MeshBasicMaterial({ map: startTexture })
 );
 
-scene.add(start);
+start.renderOrder = 1;
+start.material.depthTest = false;
 
 // Add a click event listener to the start object
 start.addEventListener('click', () => {
   // Navigate to the roadmap TypeScript file when the start object is clicked
-  window.location.href = 'roadmap.tsx'; // Replace 'roadmap.tsx' with the actual file path
+  window.location.href = 'http://localhost:3000/'; // Replace 'roadmap.tsx' with the actual file path
   // window.location.href = 'https://theuselessweb.com/'; // Replace 'roadmap.tsx' with the actual file path
 });
 
-// Chicken
+scene.add(start);
 
-// const chickenTexture = new THREE.TextureLoader().load('chicken.jpg');
+// Create an HTML button element
+const button = document.createElement('button');
+button.textContent = 'Click Here';
 
-// const chicken = new THREE.Mesh(
-//   new THREE.BoxGeometry(10, 10, 10),
-//   new THREE.MeshBasicMaterial({ map: chickenTexture })
-// );
+// Set initial button position
+updateButtonPosition();
 
-// scene.add(chicken);
+// Add a click event listener to navigate to another page
+button.addEventListener('click', () => {
+  // Navigate to the desired URL
+  window.location.href = 'http://localhost:3000/'; // Replace with your desired URL
+});
+
+// Append the button to the HTML document
+document.body.appendChild(button);
+
+// Function to update button position
+function updateButtonPosition() {
+  const startPosition = start.position.clone(); // Get the start's position
+  const startScreenPosition = startPosition.project(camera); // Project 3D position to 2D screen space
+
+  // Convert screen coordinates to CSS pixel values
+  const x = ((startScreenPosition.x + 1) * window.innerWidth) / 2;
+  const y = ((-startScreenPosition.y + 1) * window.innerHeight) / 2;
+
+  // Set the button's position using absolute CSS
+  button.style.position = 'absolute';
+  button.style.left = `${x}px`;
+  button.style.top = `${y}px`;
+  button.style.zIndex = '1'; // Ensure the button is in front of the 3D scene
+}
+
+updateButtonPosition();
 
 // Moon
 
@@ -146,9 +167,6 @@ dad.position.x = 30;
 start.position.z = -1;
 start.position.x = 2;
 
-// chicken.position.z = 30;
-// chicken.position.x = 30;
-
 // Scroll Animation
 
 function moveCamera() {
@@ -159,9 +177,6 @@ function moveCamera() {
 
   dad.rotation.y += 0.01;
   dad.rotation.z += 0.01;
-
-  // chicken.rotation.z += 0.05;
-  // chicken.rotation.x += 0.07;
 
   start.rotation.x += 0.05;
   start.rotation.y += 0.075;
@@ -183,6 +198,9 @@ function animate() {
   torus.rotation.x += 0.01;
   torus.rotation.y += 0.005;
   torus.rotation.z += 0.01;
+
+  // Update the button's position
+  updateButtonPosition();
 
   moon.rotation.x += 0.005;
 
